@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
     },
   },
   about: { type: String, default: "this is default" },
-  profile: { type: String, default: "this is default pic", validate(value){
+  profile: { type: String, default: "https://www.npmjs.com/package/bcrypt", validate(value){
     if(!validator.isURL(value))
     {
         throw new Error("wrong URL address")
