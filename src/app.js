@@ -3,9 +3,13 @@ const connectDB = require('./config/database')
 const User = require('./modal/user')
 const {signUpValidation} = require('./utils/validation')
 const bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser')
 
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
+
 
 app.post("/signup",async (req,res)=>{
     try {
@@ -35,9 +39,11 @@ app.post('/login',async (req,res)=>{
         {
             throw new Error('email id is not present in db')
         }
-        const isPasswordValid = await bcrypt.compare(password,user.password)
+        const isPasswordValid = await User.validatePassword(password)
         if(isPasswordValid)
         {
+            const token = await user.getJWT()
+            res.cookie("token",token,{expires: new Date(Date.now()*8*360000)})
             res.send("login  successful")
         }else
         {
@@ -48,44 +54,14 @@ app.post('/login',async (req,res)=>{
     }
 })
 
-app.get('/feed',async(req,res)=>{
+app.get('/profile',async (req,res)=>{
     try {
         
-        const user = await User.find({})
+        const user = req.user
+        
         res.send(user)
     } catch (error) {
-        res.status(400).send("something went wrong")
-    }
-})
-
-app.get('/user',async(req,res)=>{
-    try {
-        const user = await User.find({emailId:req.body.emailId})
-        res.send(user)
-    } catch (error) {
-        res.status(400).send("something went wrong")
         
-    }
-})
-
-app.delete('/user',async (req,res)=>{
-    const userId = req.body.userId
-    try {
-        const user = await User.findByIdAndDelete(userId)
-        res.send("user deleted successfully")
-    } catch (error) {
-        res.status(400).send("something went wrong")
-        
-    }
-})
-app.patch('/user',async (req,res)=>{
-    const userId = req.body.userId
-    const data = req.body
-    try {
-        const user = await User.findByIdAndUpdate({_id:userId},data,{runValidators:true})
-        res.send("user update successfully")
-    } catch (error) {
-        res.status(400).send("something went wrong")  
     }
 })
 
