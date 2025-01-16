@@ -31,7 +31,13 @@ userRoute.get("/user/connections",userAuth, async (req,res)=>{
             ]
         }).populate("fromUserId",["firstName","lastName" ,"age" ,"gender" ,"about" ,"profile" ,"skills"])
 
-        const data = connectionRequest.map((res)=>res.fromUserId)
+        const data = connectionRequest.map((res)=>{
+            if(row.fromUserId._id.toString() == loggedInUser._id.toString())
+            {
+                return row.toUserId
+            }
+            return row.fromUserId
+        })
 
         res.json({data})
     } catch (error) {
