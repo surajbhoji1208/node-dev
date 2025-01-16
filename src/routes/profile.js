@@ -1,10 +1,11 @@
 
 const express = require('express')
 const { validateEditProfileData } = require('../utils/validation')
+const { userAuth } = require('../middlewere/auth')
 
 const profileRoute = express.Router()
 
-profileRoute.get('/profile/view',async (req,res)=>{
+profileRoute.get('/profile/view' ,userAuth,async (req,res)=>{
     try {
         
         const user = req.user
@@ -15,7 +16,7 @@ profileRoute.get('/profile/view',async (req,res)=>{
     }
 })
 
-profileRoute.get('/profile/edit',async (req,res)=>{
+profileRoute.get('/profile/edit',userAuth,async (req,res)=>{
     try {
         
         if(!validateEditProfileData(req))
@@ -29,7 +30,7 @@ profileRoute.get('/profile/edit',async (req,res)=>{
 
         res.json({message:`${loggedInUser.firstName} your profile update successful`,loggedInUser})
     } catch (error) {
-        
+        res.status(404).json({message:"error"+error.message})
     }
 })
 

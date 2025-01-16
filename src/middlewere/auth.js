@@ -1,16 +1,16 @@
 const jwt = require('jsonwebtoken')
 const User = require('../modal/user')
 
-const userAuth = async(req,res)=>{
+const userAuth = async(req,res,next)=>{
     try {
-        const token = req.cookies
+        const token = req.cookies.token
         if(!token)
         {
             throw new Error("token is not valid")
         }
         const decodeObj = await jwt.verify(token,'DEV@Tinder$790')
         const {_id} = decodeObj
-        const user = await User.find(_id)
+        const user = await User.findById(_id);
 
         if(!user)
         {
