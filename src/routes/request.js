@@ -50,6 +50,10 @@ requestRoute.post('/request/send/:status/:toUserId',userAuth, async (req,res)=>{
     }
 })
 
+/**
+ * when hit review status api logged in user is whom request has been send(toUserID)
+ * and request id is id of fromUserId
+ */
 requestRoute.post('/request/review/:status/:requestId',userAuth, async (req,res)=>{
     try {
         const loggedInUser = req.user;
