@@ -1,6 +1,8 @@
 const express = require('express')
 const ConnectionRequest = require('../modal/connectionRequest')
 const {userAuth} = require('../middlewere/auth')
+const user = require('../modal/user')
+const user = require('../modal/user')
 const userRoute = express.Router()
 
 
@@ -45,5 +47,39 @@ userRoute.get("/user/connections",userAuth, async (req,res)=>{
     }
 })
 
+userRoute.get("/feed",userAuth, async (req,res)=>{
+    try {
+        const loggedInUser = req.user
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        limit = limit > 50 ? 50 : limit;
+        const skip = (page - 1) * limit;
+
+        const connectionRequest = await ConnectionRequest.find({
+            $or:[{fromUserId:loggedInUser._id},{toUserId:loggedInUser._id}]
+        }).select("fromUserId toUserId")
+        
+        const hideUserFromFeed = new Set()
+        connectionRequest.forEach(element => {
+
+            hideUserFromFeed.add(element.toUserId.toString())
+            hideUserFromFeed.add(element.fromUserId.toString())
+            
+        });
+
+        const user = await user.find({
+            $and:[
+                {_id:{ $nin: Array.from(hideUserFromFeed) }},
+                {_id:  { $ne: loggedInUser._id }}
+            ]
+        }).populate("fromUserId",["firstName","lastName" ,"age" ,"gender" ,"about" ,"profile" ,"skills"])
+          .skip(skip)
+          .limit(limit);
+
+        res.json({data:user})
+    } catch (error) {
+        res.status(400).json(error.message)
+    }
+})
 module.exports = userRoute
 
