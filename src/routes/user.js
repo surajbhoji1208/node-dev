@@ -2,7 +2,6 @@ const express = require('express')
 const ConnectionRequest = require('../modal/connectionRequest')
 const {userAuth} = require('../middlewere/auth')
 const user = require('../modal/user')
-const user = require('../modal/user')
 const userRoute = express.Router()
 
 
