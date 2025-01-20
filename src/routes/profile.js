@@ -16,7 +16,7 @@ profileRoute.get('/profile/view' ,userAuth,async (req,res)=>{
     }
 })
 
-profileRoute.get('/profile/edit',userAuth,async (req,res)=>{
+profileRoute.patch('/profile/edit',userAuth,async (req,res)=>{
     try {
         
         if(!validateEditProfileData(req))
@@ -28,7 +28,7 @@ profileRoute.get('/profile/edit',userAuth,async (req,res)=>{
         Object.keys(req.body).forEach((key)=>(loggedInUser[key] =req.body[key]))
        await loggedInUser.save()
 
-        res.json({message:`${loggedInUser.firstName} your profile update successful`,loggedInUser})
+        res.json({message:`${loggedInUser.firstName} your profile update successful`,data:loggedInUser})
     } catch (error) {
         res.status(404).json({message:"error"+error.message})
     }

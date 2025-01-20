@@ -6,7 +6,7 @@ const userAuth = async(req,res,next)=>{
         const token = req.cookies.token
         if(!token)
         {
-            throw new Error("token is not valid")
+         return res.status(401).json({message:"Token is not valid"})
         }
         const decodeObj = await jwt.verify(token,'DEV@Tinder$790')
         const {_id} = decodeObj
@@ -19,7 +19,7 @@ const userAuth = async(req,res,next)=>{
         req.user = user
         next()
     } catch (error) {
-        res.status(400).send('Error: '+error.message)
+        res.status(500).json({ message: error.message || "Internal Server Error" });
     }
 }
 
