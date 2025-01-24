@@ -4,6 +4,8 @@ const connectDB = require('./config/database')
 const app = express()
 var cookieParser = require('cookie-parser')
 var cors = require('cors')
+require('dotenv').config()
+
 app.use(  cors({
     origin: "http://localhost:5173",
     credentials: true,
