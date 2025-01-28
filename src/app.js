@@ -5,6 +5,7 @@ const app = express()
 var cookieParser = require('cookie-parser')
 var cors = require('cors')
 require('dotenv').config()
+require("./utils/cronJob")
 
 app.use(  cors({
     origin: "http://localhost:5173",
