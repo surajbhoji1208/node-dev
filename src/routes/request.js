@@ -3,6 +3,7 @@ const ConnectionRequest = require('../modal/connectionRequest')
 const {userAuth} = require('../middlewere/auth')
 const User = require('../modal/user')
 const requestRoute = express.Router()
+const {sendEmail} = require('../utils/sendMail')
 
 requestRoute.post('/request/send/:status/:toUserId',userAuth, async (req,res)=>{
     try {
@@ -15,7 +16,7 @@ requestRoute.post('/request/send/:status/:toUserId',userAuth, async (req,res)=>{
         {
             return res.status(400).json({message:"invalid status code"})
         }
-        const user = User.findById(toUserId)
+        const user = await User.findById(toUserId)
         if(!user)
         {
             return res.status(400).json({message:"user not exist"})
@@ -36,7 +37,17 @@ requestRoute.post('/request/send/:status/:toUserId',userAuth, async (req,res)=>{
         const connectionRequest = new ConnectionRequest({
             fromUserId,toUserId,status
         })
-        const data = await connectionRequest.save()
+        const data = await connectionRequest.save()      
+        // Email details object
+        const emailDetails = {
+            from:req.user.emailId,
+            to: user.emailId,
+            subject: 'You got a request',        // Email subject
+            text: 'This is a dynamically sent email.', // Plain text content
+            html: '<h1>This is a dynamic HTML email!</h1>', // HTML content
+            
+        };  
+        await sendEmail(emailDetails)
 
         res.json({
             message: "request send successful",
