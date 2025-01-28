@@ -3,7 +3,7 @@ const cron = require("node-cron")
 const ConnectionRequest = require("../modal/connectionRequest")
 const {sendEmail} = require("../utils/sendMail")
 
-cron.schedule("0 8 * * *", async ()=>{
+cron.schedule("4 19 * * *", async ()=>{
     try {
         const yesterday = subDays(new Date(),1)
         const startDate = startOfDay(yesterday)
@@ -18,7 +18,7 @@ cron.schedule("0 8 * * *", async ()=>{
         }).populate("fromUserId toUserId");
 
         const listOfEmails = [
-            ...new Set(pendingRequests.map((req) => req.toUserId._id)),
+            ...new Set(pendingRequests.map((req) => req.toUserId.emailId)),
           ];        console.log(listOfEmails);
         if(!listOfEmails[0])
         {
